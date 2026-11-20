@@ -57,14 +57,14 @@ public class LoginFrame extends JFrame {
 
         JLabel eyebrow = new JLabel("GROCERY POS");
         eyebrow.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        eyebrow.setForeground(new Color(171, 210, 208));
+        eyebrow.setForeground(UiTheme.ACCENT);
 
         JLabel line1 = new JLabel("<html>Run your store<br>with confidence.</html>");
         line1.setFont(new Font("Segoe UI Semibold", Font.BOLD, 30));
-        line1.setForeground(Color.WHITE);
+        line1.setForeground(new Color(250, 248, 239));
 
         JLabel line2 = new JLabel("<html><div style='width:245px'>Manage inventory, billing, customers and suppliers from one refined workspace.</div></html>");
-        line2.setForeground(new Color(211, 229, 228));
+        line2.setForeground(new Color(205, 216, 205));
         line2.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
         gbc.gridy = 0; banner.add(eyebrow, gbc);
@@ -75,7 +75,7 @@ public class LoginFrame extends JFrame {
 
     private JPanel buildForm() {
         JPanel form = new JPanel(new GridBagLayout());
-        form.setBackground(Color.WHITE);
+        form.setBackground(UiTheme.CARD);
         form.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(UiTheme.BORDER),
                 BorderFactory.createEmptyBorder(34, 48, 34, 48)));
@@ -89,7 +89,6 @@ public class LoginFrame extends JFrame {
         JLabel heading = new JLabel("Welcome back");
         heading.setFont(new Font("Segoe UI Semibold", Font.BOLD, 26));
         heading.setForeground(UiTheme.TEXT);
-
         JLabel subheading = new JLabel("Sign in to continue to your workspace");
         subheading.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         subheading.setForeground(UiTheme.MUTED);
@@ -120,13 +119,11 @@ public class LoginFrame extends JFrame {
         getRootPane().setDefaultButton(loginBtn);
         loginBtn.addActionListener(e -> login());
         registerBtn.addActionListener(e -> {
-            new RegisterFrame(this).setVisible(true);
-            setVisible(false);
+            new RegisterFrame(this).setVisible(true); setVisible(false);
         });
 
         JPanel buttons = new JPanel();
-        buttons.setOpaque(false);
-        buttons.add(loginBtn); buttons.add(registerBtn);
+        buttons.setOpaque(false); buttons.add(loginBtn); buttons.add(registerBtn);
 
         JLabel hint = new JLabel("Demo access: admin / admin123  or  cashier / cashier123");
         hint.setForeground(UiTheme.MUTED);
@@ -163,8 +160,7 @@ public class LoginFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "Invalid credentials or role.", "Login Failed", JOptionPane.ERROR_MESSAGE); return;
         }
         DashboardFrame dashboard = new DashboardFrame(user, this);
-        dashboard.setVisible(true);
-        setVisible(false);
+        dashboard.setVisible(true); setVisible(false);
         usernameField.setText(""); passwordField.setText("");
     }
 }

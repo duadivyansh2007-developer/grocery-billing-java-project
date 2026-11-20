@@ -28,7 +28,6 @@ public class DashboardFrame extends JFrame {
     private final CardLayout cards = new CardLayout();
     private final JPanel cardPanel = new JPanel(cards);
     private final HomePanel homePanel;
-    private String activeScreen = HOME;
 
     public DashboardFrame(UserAccount currentUser, LoginFrame loginFrame) {
         this.currentUser = currentUser;
@@ -72,10 +71,12 @@ public class DashboardFrame extends JFrame {
 
         JLabel profile = new JLabel("  " + currentUser.getRole() + "  ·  " + currentUser.getUsername() + "  ");
         profile.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        profile.setForeground(UiTheme.TEXT);
+        profile.setForeground(UiTheme.PRIMARY_DARK);
         profile.setOpaque(true);
-        profile.setBackground(new Color(235, 243, 242));
-        profile.setBorder(BorderFactory.createEmptyBorder(9, 12, 9, 12));
+        profile.setBackground(new Color(236, 231, 216));
+        profile.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(219, 207, 177)),
+                BorderFactory.createEmptyBorder(9, 12, 9, 12)));
         top.add(profile, BorderLayout.EAST);
         main.add(top, BorderLayout.NORTH);
 
@@ -102,14 +103,16 @@ public class DashboardFrame extends JFrame {
         sidebar.setBackground(UiTheme.SIDEBAR);
 
         JLabel brand = new JLabel("  GROCERY POS");
-        brand.setForeground(Color.WHITE);
+        brand.setForeground(new Color(244, 238, 220));
         brand.setFont(new Font("Segoe UI Semibold", Font.BOLD, 18));
-        brand.setBorder(BorderFactory.createEmptyBorder(22, 14, 22, 14));
+        brand.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(59, 105, 91)),
+                BorderFactory.createEmptyBorder(22, 14, 22, 14)));
         sidebar.add(brand, BorderLayout.NORTH);
 
         JPanel links = new JPanel(new GridLayout(12, 1, 0, 5));
         links.setOpaque(false);
-        links.setBorder(BorderFactory.createEmptyBorder(8, 10, 8, 10));
+        links.setBorder(BorderFactory.createEmptyBorder(10, 10, 8, 10));
         links.add(sideButton("Dashboard", HOME));
         links.add(sideButton("Billing", BILLING));
         links.add(sideButton("Inventory", INVENTORY));
@@ -139,17 +142,15 @@ public class DashboardFrame extends JFrame {
     private JButton sidebarButton(String label) {
         JButton button = new JButton(label);
         button.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        button.setForeground(Color.WHITE);
+        button.setForeground(new Color(238, 241, 234));
         button.setBackground(UiTheme.SIDEBAR);
         button.setFocusPainted(false);
         button.setBorderPainted(false);
         button.setOpaque(true);
         button.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        button.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 0, 0, UiTheme.SIDEBAR),
-                BorderFactory.createEmptyBorder(9, 14, 9, 14)));
+        button.setBorder(BorderFactory.createEmptyBorder(10, 14, 10, 14));
         button.setPreferredSize(new java.awt.Dimension(200, 42));
-        UiTheme.animateBackground(button, UiTheme.SIDEBAR, UiTheme.brighten(UiTheme.SIDEBAR, 10));
+        UiTheme.animateBackground(button, UiTheme.SIDEBAR, UiTheme.brighten(UiTheme.SIDEBAR, 12));
         return button;
     }
 
@@ -159,7 +160,6 @@ public class DashboardFrame extends JFrame {
         if (USERS.equals(name) && !"Admin".equalsIgnoreCase(currentUser.getRole())) {
             JOptionPane.showMessageDialog(this, "Only Admin can open User Management.", "Access Denied", JOptionPane.WARNING_MESSAGE); return;
         }
-        activeScreen = name;
         cards.show(cardPanel, name);
         homePanel.refreshCounts();
     }

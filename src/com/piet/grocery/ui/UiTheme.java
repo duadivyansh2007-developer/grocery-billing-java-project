@@ -9,29 +9,29 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.BorderLayout;
+import java.awt.Window;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.Window;
 
-/** Shared POS visual tokens and component styles. */
+/** Shared premium POS visual tokens and component styles. */
 public final class UiTheme {
-    public static final Color PRIMARY = new Color(35, 151, 155);
-    public static final Color PRIMARY_DARK = new Color(24, 82, 88);
-    public static final Color SIDEBAR = new Color(37, 142, 146);
-    public static final Color ACCENT = new Color(213, 145, 48);
-    public static final Color BACKGROUND = new Color(246, 248, 247);
-    public static final Color CARD = Color.WHITE;
-    public static final Color TEXT = new Color(31, 46, 51);
-    public static final Color MUTED = new Color(105, 119, 124);
-    public static final Color DANGER = new Color(178, 71, 73);
-    public static final Color INFO = new Color(73, 128, 132);
-    public static final Color BORDER = new Color(224, 231, 229);
+    public static final Color PRIMARY = new Color(24, 145, 108);
+    public static final Color PRIMARY_DARK = new Color(17, 49, 44);
+    public static final Color SIDEBAR = new Color(18, 63, 55);
+    public static final Color ACCENT = new Color(210, 167, 92);
+    public static final Color BACKGROUND = new Color(247, 245, 239);
+    public static final Color CARD = new Color(255, 254, 250);
+    public static final Color TEXT = new Color(29, 38, 38);
+    public static final Color MUTED = new Color(112, 119, 112);
+    public static final Color DANGER = new Color(177, 76, 72);
+    public static final Color INFO = new Color(82, 123, 112);
+    public static final Color BORDER = new Color(225, 222, 211);
 
     public static final String COLLEGE = "Poornima Institute of Engineering & Technology";
     public static final String PROJECT = "Grocery Billing & Inventory Management System";
@@ -45,7 +45,7 @@ public final class UiTheme {
     }
 
     public static JButton warningButton(String text) {
-        return filledButton(text, new Color(210, 137, 48), Color.WHITE);
+        return filledButton(text, new Color(198, 147, 62), Color.WHITE);
     }
 
     public static JButton dangerButton(String text) {
@@ -53,7 +53,7 @@ public final class UiTheme {
     }
 
     public static JButton infoButton(String text) {
-        return filledButton(text, new Color(91, 130, 132), Color.WHITE);
+        return filledButton(text, new Color(82, 123, 112), Color.WHITE);
     }
 
     public static JButton filledButton(String text, Color background, Color foreground) {
@@ -66,7 +66,9 @@ public final class UiTheme {
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         button.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
         button.setPreferredSize(new Dimension(130, 40));
-        button.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+        button.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(brighten(background, 5)),
+                BorderFactory.createEmptyBorder(8, 16, 8, 16)));
         animateBackground(button, background, brighten(background, 12));
         return button;
     }
@@ -74,7 +76,7 @@ public final class UiTheme {
     public static void animateBackground(JButton button, Color normal, Color hovered) {
         button.setBackground(normal);
         button.addMouseListener(new MouseAdapter() {
-            private final Timer[] timer = { null };
+            private final Timer[] timer = {null};
 
             @Override public void mouseEntered(MouseEvent event) { transition(button, normal, hovered, timer); }
             @Override public void mouseExited(MouseEvent event) { transition(button, hovered, normal, timer); }
@@ -168,9 +170,9 @@ public final class UiTheme {
         copy.add(captionLabel); copy.add(valueLabel);
         JPanel icon = new JPanel();
         icon.setPreferredSize(new Dimension(42, 42));
-        icon.setBackground(brighten(stripe, 20));
+        icon.setBackground(brighten(stripe, 18));
         icon.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(brighten(stripe, 4)),
+                BorderFactory.createLineBorder(brighten(stripe, 2)),
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)));
         card.add(icon, BorderLayout.WEST); card.add(copy, BorderLayout.CENTER);
         return card;
@@ -179,15 +181,15 @@ public final class UiTheme {
     public static void styleTable(JTable table) {
         table.setRowHeight(36);
         table.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        table.setSelectionBackground(new Color(222, 242, 240));
+        table.setSelectionBackground(new Color(224, 239, 229));
         table.setSelectionForeground(TEXT);
         table.setGridColor(BORDER);
         table.setFillsViewportHeight(true);
         table.setShowVerticalLines(false);
         JTableHeader header = table.getTableHeader();
         header.setFont(new Font("Segoe UI Semibold", Font.BOLD, 12));
-        header.setBackground(new Color(247, 249, 248));
-        header.setForeground(MUTED);
+        header.setBackground(new Color(242, 240, 232));
+        header.setForeground(new Color(91, 99, 92));
         header.setPreferredSize(new Dimension(0, 40));
         header.setReorderingAllowed(false);
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
