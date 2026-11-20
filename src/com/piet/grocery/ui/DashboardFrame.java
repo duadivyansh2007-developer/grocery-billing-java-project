@@ -6,22 +6,15 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.FlowLayout;
-import java.awt.event.KeyEvent;
 
-/** Main window after login: POS sidebar, header, and card-based module workspace. */
+/** Main premium POS workspace. */
 public class DashboardFrame extends JFrame {
     public static final String HOME = "HOME";
     public static final String INVENTORY = "INVENTORY";
@@ -35,6 +28,7 @@ public class DashboardFrame extends JFrame {
     private final CardLayout cards = new CardLayout();
     private final JPanel cardPanel = new JPanel(cards);
     private final HomePanel homePanel;
+    private String activeScreen = HOME;
 
     public DashboardFrame(UserAccount currentUser, LoginFrame loginFrame) {
         this.currentUser = currentUser;
@@ -53,6 +47,7 @@ public class DashboardFrame extends JFrame {
         root.add(buildMainArea(), BorderLayout.CENTER);
         setContentPane(root);
         showScreen(HOME);
+        UiTheme.fadeIn(this);
     }
 
     private JPanel buildMainArea() {
@@ -63,24 +58,23 @@ public class DashboardFrame extends JFrame {
         top.setBackground(UiTheme.CARD);
         top.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 1, 0, UiTheme.BORDER),
-                BorderFactory.createEmptyBorder(14, 22, 14, 22)));
+                BorderFactory.createEmptyBorder(15, 24, 15, 24)));
+
         JLabel heading = new JLabel("Welcome back, " + currentUser.getFullName());
-        heading.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        heading.setFont(new Font("Segoe UI Semibold", Font.BOLD, 19));
         heading.setForeground(UiTheme.TEXT);
         JLabel subtitle = new JLabel("Store overview for today's operations");
         subtitle.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         subtitle.setForeground(UiTheme.MUTED);
         JPanel titles = new JPanel(new GridLayout(2, 1, 0, 2));
-        titles.setOpaque(false);
-        titles.add(heading);
-        titles.add(subtitle);
+        titles.setOpaque(false); titles.add(heading); titles.add(subtitle);
         top.add(titles, BorderLayout.WEST);
 
-        JLabel profile = new JLabel(" " + currentUser.getRole() + "  ·  " + currentUser.getUsername() + " ");
+        JLabel profile = new JLabel("  " + currentUser.getRole() + "  ·  " + currentUser.getUsername() + "  ");
         profile.setFont(new Font("Segoe UI", Font.BOLD, 12));
         profile.setForeground(UiTheme.TEXT);
         profile.setOpaque(true);
-        profile.setBackground(new Color(238, 245, 244));
+        profile.setBackground(new Color(235, 243, 242));
         profile.setBorder(BorderFactory.createEmptyBorder(9, 12, 9, 12));
         top.add(profile, BorderLayout.EAST);
         main.add(top, BorderLayout.NORTH);
@@ -96,7 +90,7 @@ public class DashboardFrame extends JFrame {
 
         JPanel workspace = new JPanel(new BorderLayout());
         workspace.setBackground(UiTheme.BACKGROUND);
-        workspace.setBorder(BorderFactory.createEmptyBorder(18, 22, 18, 22));
+        workspace.setBorder(BorderFactory.createEmptyBorder(20, 24, 20, 24));
         workspace.add(cardPanel, BorderLayout.CENTER);
         main.add(workspace, BorderLayout.CENTER);
         return main;
@@ -104,16 +98,16 @@ public class DashboardFrame extends JFrame {
 
     private JPanel buildSidebar() {
         JPanel sidebar = new JPanel(new BorderLayout());
-        sidebar.setPreferredSize(new java.awt.Dimension(210, 0));
+        sidebar.setPreferredSize(new java.awt.Dimension(220, 0));
         sidebar.setBackground(UiTheme.SIDEBAR);
 
         JLabel brand = new JLabel("  GROCERY POS");
         brand.setForeground(Color.WHITE);
-        brand.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        brand.setBorder(BorderFactory.createEmptyBorder(20, 12, 18, 12));
+        brand.setFont(new Font("Segoe UI Semibold", Font.BOLD, 18));
+        brand.setBorder(BorderFactory.createEmptyBorder(22, 14, 22, 14));
         sidebar.add(brand, BorderLayout.NORTH);
 
-        JPanel links = new JPanel(new GridLayout(12, 1, 0, 4));
+        JPanel links = new JPanel(new GridLayout(12, 1, 0, 5));
         links.setOpaque(false);
         links.setBorder(BorderFactory.createEmptyBorder(8, 10, 8, 10));
         links.add(sideButton("Dashboard", HOME));
@@ -121,20 +115,17 @@ public class DashboardFrame extends JFrame {
         links.add(sideButton("Inventory", INVENTORY));
         links.add(sideButton("Customers", CUSTOMERS));
         links.add(sideButton("Suppliers", SUPPLIERS));
-        if ("Admin".equalsIgnoreCase(currentUser.getRole())) {
-            links.add(sideButton("Users", USERS));
-        }
+        if ("Admin".equalsIgnoreCase(currentUser.getRole())) links.add(sideButton("Users", USERS));
         sidebar.add(links, BorderLayout.CENTER);
 
-        JPanel account = new JPanel(new GridLayout(2, 1, 0, 6));
+        JPanel account = new JPanel(new GridLayout(2, 1, 0, 7));
         account.setOpaque(false);
-        account.setBorder(BorderFactory.createEmptyBorder(10, 10, 14, 10));
+        account.setBorder(BorderFactory.createEmptyBorder(12, 10, 16, 10));
         JButton password = sidebarButton("Change Password");
         password.addActionListener(e -> new ChangePasswordDialog(this, currentUser).setVisible(true));
         JButton logout = sidebarButton("Logout");
         logout.addActionListener(e -> logout());
-        account.add(password);
-        account.add(logout);
+        account.add(password); account.add(logout);
         sidebar.add(account, BorderLayout.SOUTH);
         return sidebar;
     }
@@ -154,8 +145,11 @@ public class DashboardFrame extends JFrame {
         button.setBorderPainted(false);
         button.setOpaque(true);
         button.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        button.setBorder(BorderFactory.createEmptyBorder(8, 14, 8, 14));
-        button.setPreferredSize(new java.awt.Dimension(190, 40));
+        button.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 0, 0, UiTheme.SIDEBAR),
+                BorderFactory.createEmptyBorder(9, 14, 9, 14)));
+        button.setPreferredSize(new java.awt.Dimension(200, 42));
+        UiTheme.animateBackground(button, UiTheme.SIDEBAR, UiTheme.brighten(UiTheme.SIDEBAR, 10));
         return button;
     }
 
@@ -163,20 +157,15 @@ public class DashboardFrame extends JFrame {
 
     public void showScreen(String name) {
         if (USERS.equals(name) && !"Admin".equalsIgnoreCase(currentUser.getRole())) {
-            JOptionPane.showMessageDialog(this, "Only Admin can open User Management.",
-                    "Access Denied", JOptionPane.WARNING_MESSAGE);
-            return;
+            JOptionPane.showMessageDialog(this, "Only Admin can open User Management.", "Access Denied", JOptionPane.WARNING_MESSAGE); return;
         }
+        activeScreen = name;
         cards.show(cardPanel, name);
         homePanel.refreshCounts();
     }
 
     private void logout() {
-        int ok = JOptionPane.showConfirmDialog(this, "Logout and return to the login screen?",
-                "Logout", JOptionPane.YES_NO_OPTION);
-        if (ok == JOptionPane.YES_OPTION) {
-            dispose();
-            loginFrame.setVisible(true);
-        }
+        int ok = JOptionPane.showConfirmDialog(this, "Logout and return to the login screen?", "Logout", JOptionPane.YES_NO_OPTION);
+        if (ok == JOptionPane.YES_OPTION) { dispose(); loginFrame.setVisible(true); }
     }
 }
