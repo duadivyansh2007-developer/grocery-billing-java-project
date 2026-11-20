@@ -69,23 +69,18 @@ On Windows, press `Win + Shift + S` to take screenshots.
 
 ## 7. Common problems
 
-**Database Connection Failed / Unknown database**  
 **Database Connection Failed / Unknown database**
 Check that MySQL Server is running, execute the SQL in section 2, and verify that `database.properties` is beside `pom.xml` and has the correct password.
 
-**Access denied for user `root`**  
 **Access denied for user `root`**
 The password in `database.properties` does not match your MySQL root password. Correct it and run `Main` again.
 
-**Maven or Connector/J appears missing in IntelliJ**  
 **Maven or Connector/J appears missing in IntelliJ**
 Reload Maven projects and ensure the computer has internet access for the initial dependency download.
 
-**Cannot resolve Java symbols**  
 **Cannot resolve Java symbols**
 Check **File → Project Structure → Project** and select an installed JDK.
 
-**Users menu is missing**  
 **Users menu is missing**
 Only Admin sees User Management. Log in using the Admin role.
 
