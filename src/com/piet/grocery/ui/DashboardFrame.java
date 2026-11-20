@@ -2,6 +2,7 @@ package com.piet.grocery.ui;
 
 import com.piet.grocery.model.UserAccount;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -16,9 +17,11 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.FlowLayout;
 import java.awt.event.KeyEvent;
 
-/** Main window after login: menu, toolbar, and CardLayout screens. */
+/** Main window after login: POS sidebar, header, and card-based module workspace. */
 public class DashboardFrame extends JFrame {
     public static final String HOME = "HOME";
     public static final String INVENTORY = "INVENTORY";
@@ -40,43 +43,123 @@ public class DashboardFrame extends JFrame {
 
         setTitle(UiTheme.PROJECT + " - Dashboard");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1100, 700);
+        setSize(1280, 780);
+        setMinimumSize(new java.awt.Dimension(980, 650));
         setLocationRelativeTo(null);
 
-        setJMenuBar(buildMenu());
-
         JPanel root = new JPanel(new BorderLayout());
-        root.add(UiTheme.headerBar("Dashboard"), BorderLayout.NORTH);
+        root.setBackground(UiTheme.BACKGROUND);
+        root.add(buildSidebar(), BorderLayout.WEST);
+        root.add(buildMainArea(), BorderLayout.CENTER);
+        setContentPane(root);
+        showScreen(HOME);
+    }
 
-        JPanel center = new JPanel(new BorderLayout(0, 12));
-        center.setBackground(UiTheme.BACKGROUND);
-        center.add(buildToolbar(), BorderLayout.NORTH);
+    private JPanel buildMainArea() {
+        JPanel main = new JPanel(new BorderLayout());
+        main.setBackground(UiTheme.BACKGROUND);
 
+        JPanel top = new JPanel(new BorderLayout());
+        top.setBackground(UiTheme.CARD);
+        top.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 0, UiTheme.BORDER),
+                BorderFactory.createEmptyBorder(14, 22, 14, 22)));
+        JLabel heading = new JLabel("Welcome back, " + currentUser.getFullName());
+        heading.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        heading.setForeground(UiTheme.TEXT);
+        JLabel subtitle = new JLabel("Store overview for today's operations");
+        subtitle.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        subtitle.setForeground(UiTheme.MUTED);
+        JPanel titles = new JPanel(new GridLayout(2, 1, 0, 2));
+        titles.setOpaque(false);
+        titles.add(heading);
+        titles.add(subtitle);
+        top.add(titles, BorderLayout.WEST);
+
+        JLabel profile = new JLabel(" " + currentUser.getRole() + "  ·  " + currentUser.getUsername() + " ");
+        profile.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        profile.setForeground(UiTheme.TEXT);
+        profile.setOpaque(true);
+        profile.setBackground(new Color(238, 245, 244));
+        profile.setBorder(BorderFactory.createEmptyBorder(9, 12, 9, 12));
+        top.add(profile, BorderLayout.EAST);
+        main.add(top, BorderLayout.NORTH);
+
+        cardPanel.setOpaque(true);
+        cardPanel.setBackground(UiTheme.BACKGROUND);
         cardPanel.add(homePanel, HOME);
         cardPanel.add(new InventoryPanel(), INVENTORY);
         cardPanel.add(new BillingPanel(), BILLING);
         cardPanel.add(new CustomerPanel(), CUSTOMERS);
         cardPanel.add(new SupplierPanel(), SUPPLIERS);
         cardPanel.add(new UserPanel(), USERS);
-        center.add(cardPanel, BorderLayout.CENTER);
 
-        JLabel status = new JLabel("  Logged in as " + currentUser.getFullName()
-                + "  (" + currentUser.getRole() + ")   |   Java Swing desktop app | MySQL/JDBC connected");
-        status.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        status.setForeground(Color.WHITE);
-        status.setOpaque(true);
-        status.setBackground(UiTheme.PRIMARY_DARK);
-        status.setBorder(javax.swing.BorderFactory.createEmptyBorder(6, 8, 6, 8));
-
-        root.add(center, BorderLayout.CENTER);
-        root.add(status, BorderLayout.SOUTH);
-        setContentPane(root);
-        showScreen(HOME);
+        JPanel workspace = new JPanel(new BorderLayout());
+        workspace.setBackground(UiTheme.BACKGROUND);
+        workspace.setBorder(BorderFactory.createEmptyBorder(18, 22, 18, 22));
+        workspace.add(cardPanel, BorderLayout.CENTER);
+        main.add(workspace, BorderLayout.CENTER);
+        return main;
     }
 
-    public UserAccount getCurrentUser() {
-        return currentUser;
+    private JPanel buildSidebar() {
+        JPanel sidebar = new JPanel(new BorderLayout());
+        sidebar.setPreferredSize(new java.awt.Dimension(210, 0));
+        sidebar.setBackground(UiTheme.SIDEBAR);
+
+        JLabel brand = new JLabel("  GROCERY POS");
+        brand.setForeground(Color.WHITE);
+        brand.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        brand.setBorder(BorderFactory.createEmptyBorder(20, 12, 18, 12));
+        sidebar.add(brand, BorderLayout.NORTH);
+
+        JPanel links = new JPanel(new GridLayout(12, 1, 0, 4));
+        links.setOpaque(false);
+        links.setBorder(BorderFactory.createEmptyBorder(8, 10, 8, 10));
+        links.add(sideButton("Dashboard", HOME));
+        links.add(sideButton("Billing", BILLING));
+        links.add(sideButton("Inventory", INVENTORY));
+        links.add(sideButton("Customers", CUSTOMERS));
+        links.add(sideButton("Suppliers", SUPPLIERS));
+        if ("Admin".equalsIgnoreCase(currentUser.getRole())) {
+            links.add(sideButton("Users", USERS));
+        }
+        sidebar.add(links, BorderLayout.CENTER);
+
+        JPanel account = new JPanel(new GridLayout(2, 1, 0, 6));
+        account.setOpaque(false);
+        account.setBorder(BorderFactory.createEmptyBorder(10, 10, 14, 10));
+        JButton password = sidebarButton("Change Password");
+        password.addActionListener(e -> new ChangePasswordDialog(this, currentUser).setVisible(true));
+        JButton logout = sidebarButton("Logout");
+        logout.addActionListener(e -> logout());
+        account.add(password);
+        account.add(logout);
+        sidebar.add(account, BorderLayout.SOUTH);
+        return sidebar;
     }
+
+    private JButton sideButton(String label, String screen) {
+        JButton button = sidebarButton(label);
+        button.addActionListener(e -> showScreen(screen));
+        return button;
+    }
+
+    private JButton sidebarButton(String label) {
+        JButton button = new JButton(label);
+        button.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        button.setForeground(Color.WHITE);
+        button.setBackground(UiTheme.SIDEBAR);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setOpaque(true);
+        button.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        button.setBorder(BorderFactory.createEmptyBorder(8, 14, 8, 14));
+        button.setPreferredSize(new java.awt.Dimension(190, 40));
+        return button;
+    }
+
+    public UserAccount getCurrentUser() { return currentUser; }
 
     public void showScreen(String name) {
         if (USERS.equals(name) && !"Admin".equalsIgnoreCase(currentUser.getRole())) {
@@ -86,85 +169,6 @@ public class DashboardFrame extends JFrame {
         }
         cards.show(cardPanel, name);
         homePanel.refreshCounts();
-    }
-
-    private JMenuBar buildMenu() {
-        JMenuBar bar = new JMenuBar();
-
-        JMenu modules = new JMenu("Modules");
-        modules.setMnemonic(KeyEvent.VK_M);
-        modules.add(item("Dashboard", HOME, KeyEvent.VK_D));
-        modules.add(item("Inventory", INVENTORY, KeyEvent.VK_I));
-        modules.add(item("Billing", BILLING, KeyEvent.VK_B));
-        modules.add(item("Customers", CUSTOMERS, KeyEvent.VK_C));
-        modules.add(item("Suppliers", SUPPLIERS, KeyEvent.VK_S));
-        if ("Admin".equalsIgnoreCase(currentUser.getRole())) {
-            modules.add(item("Users", USERS, KeyEvent.VK_U));
-        }
-
-        JMenu account = new JMenu("Account");
-        JMenuItem changePassword = new JMenuItem("Change Password");
-        changePassword.addActionListener(e -> new ChangePasswordDialog(this, currentUser).setVisible(true));
-        JMenuItem logout = new JMenuItem("Logout");
-        logout.addActionListener(e -> logout());
-        JMenuItem exit = new JMenuItem("Exit");
-        exit.addActionListener(e -> System.exit(0));
-        account.add(changePassword);
-        account.add(logout);
-        account.addSeparator();
-        account.add(exit);
-
-        JMenu help = new JMenu("Help");
-        JMenuItem about = new JMenuItem("About");
-        about.addActionListener(e -> JOptionPane.showMessageDialog(this,
-                UiTheme.PROJECT + "\n"
-                        + "Student: " + UiTheme.STUDENT + "\n"
-                        + "Roll No: " + UiTheme.ROLL + "\n"
-                        + UiTheme.COLLEGE + "\n"
-                        + "Tech: Java Swing (GUI prototype for Mid Term I)",
-                "About", JOptionPane.INFORMATION_MESSAGE));
-        help.add(about);
-
-        bar.add(modules);
-        bar.add(account);
-        bar.add(help);
-        return bar;
-    }
-
-    private JMenuItem item(String label, String screen, int key) {
-        JMenuItem menuItem = new JMenuItem(label);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(key, KeyEvent.CTRL_DOWN_MASK));
-        menuItem.addActionListener(e -> showScreen(screen));
-        return menuItem;
-    }
-
-    private JToolBar buildToolbar() {
-        JToolBar bar = new JToolBar();
-        bar.setFloatable(false);
-        bar.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 16, 0, 16));
-        bar.setBackground(UiTheme.BACKGROUND);
-        bar.add(tool("Dashboard", HOME));
-        bar.add(tool("Inventory", INVENTORY));
-        bar.add(tool("Billing", BILLING));
-        bar.add(tool("Customers", CUSTOMERS));
-        bar.add(tool("Suppliers", SUPPLIERS));
-        if ("Admin".equalsIgnoreCase(currentUser.getRole())) {
-            bar.add(tool("Users", USERS));
-        }
-        bar.addSeparator();
-        JButton password = UiTheme.warningButton("Password");
-        password.addActionListener(e -> new ChangePasswordDialog(this, currentUser).setVisible(true));
-        JButton logout = UiTheme.dangerButton("Logout");
-        logout.addActionListener(e -> logout());
-        bar.add(password);
-        bar.add(logout);
-        return bar;
-    }
-
-    private JButton tool(String label, String screen) {
-        JButton button = UiTheme.primaryButton(label);
-        button.addActionListener(e -> showScreen(screen));
-        return button;
     }
 
     private void logout() {

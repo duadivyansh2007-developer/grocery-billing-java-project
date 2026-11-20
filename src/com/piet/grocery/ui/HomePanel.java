@@ -8,11 +8,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 
-/** Dashboard home with summary cards and quick navigation. */
+/** Dashboard home with live store totals and quick navigation. */
 public class HomePanel extends JPanel {
     private final DashboardFrame dashboard;
     private final JPanel cardsRow = new JPanel(new GridLayout(1, 4, 12, 12));
@@ -21,54 +20,76 @@ public class HomePanel extends JPanel {
         this.dashboard = dashboard;
         setLayout(new BorderLayout(16, 16));
         setBackground(UiTheme.BACKGROUND);
-        setBorder(BorderFactory.createEmptyBorder(4, 20, 20, 20));
 
-        JLabel welcome = new JLabel("Welcome, " + dashboard.getCurrentUser().getFullName()
-                + "  (" + dashboard.getCurrentUser().getRole() + ")");
-        welcome.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        welcome.setForeground(UiTheme.PRIMARY_DARK);
-
-        JLabel hint = new JLabel("A quick view of today's store activity and available modules.");
+        JPanel heading = new JPanel(new BorderLayout());
+        heading.setOpaque(false);
+        JLabel title = new JLabel("Today's store overview");
+        title.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        title.setForeground(UiTheme.TEXT);
+        JLabel hint = new JLabel("Monitor inventory and move quickly between POS operations.");
+        hint.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         hint.setForeground(UiTheme.MUTED);
-
-        JPanel top = new JPanel(new GridLayout(2, 1));
-        top.setOpaque(false);
-        top.add(welcome);
-        top.add(hint);
+        JPanel copy = new JPanel(new GridLayout(2, 1, 0, 3));
+        copy.setOpaque(false);
+        copy.add(title);
+        copy.add(hint);
+        heading.add(copy, BorderLayout.WEST);
 
         cardsRow.setOpaque(false);
         refreshCounts();
 
-        JPanel quick = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        JPanel quick = new JPanel(new GridLayout(1, 4, 12, 12));
         quick.setOpaque(false);
-        quick.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(UiTheme.BORDER),
-            BorderFactory.createEmptyBorder(10, 10, 10, 10)));
-        quick.add(nav("Open Inventory", DashboardFrame.INVENTORY, UiTheme.PRIMARY));
-        quick.add(nav("New Bill", DashboardFrame.BILLING, new Color(245, 124, 0)));
-        quick.add(nav("Customers", DashboardFrame.CUSTOMERS, UiTheme.INFO));
-        quick.add(nav("Suppliers", DashboardFrame.SUPPLIERS, new Color(81, 45, 168)));
+        quick.add(action("New bill", "Billing", DashboardFrame.BILLING));
+        quick.add(action("Inventory", "Manage products", DashboardFrame.INVENTORY));
+        quick.add(action("Customers", "View records", DashboardFrame.CUSTOMERS));
+        quick.add(action("Suppliers", "View records", DashboardFrame.SUPPLIERS));
 
-        add(top, BorderLayout.NORTH);
+        JPanel quickWrap = new JPanel(new BorderLayout(0, 8));
+        quickWrap.setOpaque(false);
+        JLabel quickTitle = new JLabel("Quick actions");
+        quickTitle.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        quickTitle.setForeground(UiTheme.TEXT);
+        quickWrap.add(quickTitle, BorderLayout.NORTH);
+        quickWrap.add(quick, BorderLayout.CENTER);
+
+        add(heading, BorderLayout.NORTH);
         add(cardsRow, BorderLayout.CENTER);
-        add(quick, BorderLayout.SOUTH);
+        add(quickWrap, BorderLayout.SOUTH);
     }
 
     public void refreshCounts() {
         DummyStore store = DummyStore.get();
         cardsRow.removeAll();
-        cardsRow.add(UiTheme.summaryCard("Products in stock", String.valueOf(store.getProducts().size()), UiTheme.PRIMARY));
+        cardsRow.add(UiTheme.summaryCard("Products", String.valueOf(store.getProducts().size()), UiTheme.PRIMARY));
         cardsRow.add(UiTheme.summaryCard("Customers", String.valueOf(store.getCustomers().size()), UiTheme.INFO));
-        cardsRow.add(UiTheme.summaryCard("Suppliers", String.valueOf(store.getSuppliers().size()), new Color(81, 45, 168)));
-        cardsRow.add(UiTheme.summaryCard("Users", String.valueOf(store.getUsers().size()), new Color(245, 124, 0)));
+        cardsRow.add(UiTheme.summaryCard("Suppliers", String.valueOf(store.getSuppliers().size()), new Color(101, 154, 157)));
+        cardsRow.add(UiTheme.summaryCard("Users", String.valueOf(store.getUsers().size()), new Color(245, 158, 11)));
         cardsRow.revalidate();
         cardsRow.repaint();
     }
 
-    private JButton nav(String text, String screen, Color color) {
-        JButton button = UiTheme.filledButton(text, color, Color.WHITE);
-        button.setPreferredSize(new java.awt.Dimension(160, 40));
-        button.addActionListener(e -> dashboard.showScreen(screen));
-        return button;
+    private JPanel action(String title, String detail, String screen) {
+        JPanel card = new JPanel(new BorderLayout());
+        card.setBackground(UiTheme.CARD);
+        card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(UiTheme.BORDER),
+                BorderFactory.createEmptyBorder(12, 14, 12, 14)));
+        JLabel name = new JLabel(title);
+        name.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        name.setForeground(UiTheme.TEXT);
+        JLabel desc = new JLabel(detail);
+        desc.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        desc.setForeground(UiTheme.MUTED);
+        JPanel copy = new JPanel(new GridLayout(2, 1, 0, 3));
+        copy.setOpaque(false);
+        copy.add(name);
+        copy.add(desc);
+        JButton open = UiTheme.primaryButton("Open");
+        open.setPreferredSize(new java.awt.Dimension(72, 34));
+        open.addActionListener(e -> dashboard.showScreen(screen));
+        card.add(copy, BorderLayout.CENTER);
+        card.add(open, BorderLayout.EAST);
+        return card;
     }
 }
