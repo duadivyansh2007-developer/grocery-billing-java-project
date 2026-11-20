@@ -1,0 +1,1 @@
+CREATE DATABASE IF NOT EXISTS grocery_billing CHARACTER SET utf8mb4;

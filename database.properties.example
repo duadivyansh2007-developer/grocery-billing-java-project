@@ -1,0 +1,3 @@
+db.url=jdbc:mysql://localhost:3306/grocery_billing?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
+db.user=root
+db.password=YOUR_MYSQL_PASSWORD
